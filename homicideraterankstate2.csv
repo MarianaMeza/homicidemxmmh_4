@@ -1,0 +1,161 @@
+states,year,homicide_rate,rank
+Aguascalientes,2007,4.32,28
+Baja California,2007,16.8,5
+Baja California Sur,2007,4.79,24
+Campeche,2007,4.53,26
+Chiapas,2007,7.64,14
+Chihuahua,2007,18.27,4
+Coahuila,2007,4.54,25
+Colima,2007,4.86,23
+Durango,2007,15.57,6
+Guanajuato,2007,4.26,29
+Guerrero,2007,23.88,3
+Hidalgo,2007,5.73,21
+Jalisco,2007,5.48,22
+Mexico City,2007,7.96,13
+Michoacan,2007,12.28,8
+Morelos,2007,6.54,17
+Nayarit,2007,10.43,10
+Nuevo Leon,2007,6.31,19
+Oaxaca,2007,25.12,2
+Puebla,2007,7.1,16
+Queretaro,2007,3.26,31
+Quintana Roo,2007,14.45,7
+San Luis Potosi,2007,6.06,20
+Sinaloa,2007,26.91,1
+Sonora,2007,11.91,9
+State of Mexico,2007,7.63,15
+Tabasco,2007,8.88,11
+Tamaulipas,2007,8.32,12
+Tlaxcala,2007,3.6,30
+Veracruz,2007,6.37,18
+Yucatan,2007,1.58,32
+Zacatecas,2007,4.52,27
+Aguascalientes,2009,5.61,23
+Baja California,2009,23.67,5
+Baja California Sur,2009,4.94,29
+Campeche,2009,4.98,27
+Chiapas,2009,10.32,12
+Chihuahua,2009,90.56,1
+Coahuila,2009,8.75,14
+Colima,2009,8.06,17
+Durango,2009,8.34,16
+Guanajuato,2009,56.36,2
+Guerrero,2009,7.52,19
+Hidalgo,2009,41.9,4
+Jalisco,2009,5.17,25
+Mexico City,2009,7.77,18
+Michoacan,2009,8.78,13
+Morelos,2009,16.61,9
+Nayarit,2009,17.81,8
+Nuevo Leon,2009,13.66,10
+Oaxaca,2009,5.75,22
+Puebla,2009,19.59,6
+Queretaro,2009,7.14,20
+Quintana Roo,2009,4.96,28
+San Luis Potosi,2009,13.55,11
+Sinaloa,2009,6.1,21
+Sonora,2009,44.35,3
+State of Mexico,2009,18.59,7
+Tabasco,2009,5.25,24
+Tamaulipas,2009,8.75,15
+Tlaxcala,2009,4.11,31
+Veracruz,2009,4.54,30
+Yucatan,2009,1.69,32
+Zacatecas,2009,5.09,26
+Aguascalientes,2012,3.57,30
+Baja California,2012,17.73,12
+Baja California Sur,2012,5.03,28
+Campeche,2012,7.96,25
+Chiapas,2012,11.35,22
+Chihuahua,2012,55.49,2
+Coahuila,2012,27.01,9
+Colima,2012,41.87,4
+Durango,2012,36.15,6
+Guanajuato,2012,13.6,17
+Guerrero,2012,66.01,1
+Hidalgo,2012,3,31
+Jalisco,2012,15.49,15
+Mexico City,2012,8.74,24
+Michoacan,2012,16.8,14
+Morelos,2012,46.57,3
+Nayarit,2012,21.12,10
+Nuevo Leon,2012,29.97,7
+Oaxaca,2012,12.01,21
+Puebla,2012,9.63,23
+Queretaro,2012,5.75,26
+Quintana Roo,2012,17.36,13
+San Luis Potosi,2012,14.8,16
+Sinaloa,2012,40.99,5
+Sonora,2012,17.83,11
+State of Mexico,2012,13.22,18
+Tabasco,2012,5.37,27
+Tamaulipas,2012,29.71,8
+Tlaxcala,2012,4.82,29
+Veracruz,2012,12.32,20
+Yucatan,2012,1.87,32
+Zacatecas,2012,12.69,19
+Aguascalientes,2015,2.95,31
+Baja California,2015,23.82,5
+Baja California Sur,2015,19.77,7
+Campeche,2015,5.84,28
+Chiapas,2015,9.56,21
+Chihuahua,2015,25.47,4
+Coahuila,2015,9.93,18
+Colima,2015,23.08,6
+Durango,2015,9.64,20
+Guanajuato,2015,13.49,15
+Guerrero,2015,15.11,11
+Hidalgo,2015,56.5,1
+Jalisco,2015,4.97,29
+Mexico City,2015,12.85,16
+Michoacan,2015,12.27,17
+Morelos,2015,16.9,10
+Nayarit,2015,25.78,3
+Nuevo Leon,2015,6.78,27
+Oaxaca,2015,8.87,22
+Puebla,2015,18.74,8
+Queretaro,2015,8.06,24
+Quintana Roo,2015,6.93,26
+San Luis Potosi,2015,14.48,14
+Sinaloa,2015,8.75,23
+Sonora,2015,28.65,2
+State of Mexico,2015,17.46,9
+Tabasco,2015,9.77,19
+Tamaulipas,2015,15.04,12
+Tlaxcala,2015,4.62,30
+Veracruz,2015,7.02,25
+Yucatan,2015,2.5,32
+Zacatecas,2015,14.91,13
+Aguascalientes,2017,6.13,31
+Baja California,2017,58.36,4
+Baja California Sur,2017,69.15,2
+Campeche,2017,7.17,29
+Chiapas,2017,8.83,26
+Chihuahua,2017,41.72,6
+Coahuila,2017,7.62,28
+Colima,2017,93.61,1
+Durango,2017,12.5,22
+Guanajuato,2017,18.55,16
+Guerrero,2017,64.26,3
+Hidalgo,2017,6.79,30
+Jalisco,2017,16.88,17
+Mexico City,2017,12.31,23
+Michoacan,2017,27.41,9
+Morelos,2017,30.63,8
+Nayarit,2017,20.1,14
+Nuevo Leon,2017,12.54,21
+Oaxaca,2017,22.6,11
+Puebla,2017,14.56,20
+Queretaro,2017,8.53,27
+Quintana Roo,2017,21.57,13
+San Luis Potosi,2017,16.74,18
+Sinaloa,2017,43.89,5
+Sonora,2017,23.01,10
+State of Mexico,2017,11.75,24
+Tabasco,2017,15.96,19
+Tamaulipas,2017,22.22,12
+Tlaxcala,2017,9.29,25
+Veracruz,2017,20.1,15
+Yucatan,2017,2.12,32
+Zacatecas,2017,35.12,7

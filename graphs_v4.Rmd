@@ -1,0 +1,460 @@
+---
+title: "graphs_v4"
+author: "Mariana Meza Hernandez"
+date: "February 9, 2019"
+output: 
+  html_document:
+     code_folding: hide 
+
+---
+```{r message= FALSE, warning = FALSE, echo=FALSE}
+library(sf)
+library(ggplot2)
+library(tidyverse)
+library(stringr)
+library(extrafont)
+library(ggpubr)
+library(ggalluvial)
+library(cowplot)
+library(rnaturalearth)
+library(rgeos)
+library(scales)
+library(waffle)
+library(dplyr)
+library(forcats)
+library(ggthemes)
+```
+
+
+# Theme 
+```{r}
+# generating new theme
+theme_mmh <- function(base_size = 11,
+                      base_family = "Cambria",
+                      base_line_size = base_size / 170,
+                      base_rect_size = base_size / 170){
+  theme_minimal(base_size = base_size, 
+                base_family = base_family,
+                base_line_size = base_line_size) %+replace%
+    theme(
+      
+      plot.title = element_text(
+        color = rgb(34, 34, 34, maxColorValue = 255), 
+        face = "bold",
+        hjust = 0,
+        family = "Cambria"),
+      axis.title = element_text(
+        color = rgb(73, 72, 72, maxColorValue = 255),
+        size = rel(0.80),
+        family = "Garamond"),
+      axis.text = element_text(
+        color = rgb(64, 64, 64, maxColorValue = 255),
+        size = rel(0.65),
+        family = "Garamond"),
+      legend.title = element_text(
+        color = rgb(64, 64, 64, maxColorValue = 255),
+        size = rel(0.80),
+        family = "Garamond"),
+      legend.text = element_text(
+        color =rgb(64, 64, 64, maxColorValue = 255),
+        size = rel(0.65),
+        family = "Garamond"),
+      panel.background = element_blank(),
+      panel.grid.major = element_line(
+        rgb(192, 192, 187, maxColorValue = 255),
+        linetype = "longdash"),   
+     # panel.grid.minor = element_line(
+      #  rgb(161, 160, 160, maxColorValue = 255),
+       # linetype = "longdash", 
+        #size = rel(4)),   
+      
+      complete = TRUE
+    )
+}
+```
+
+## Graph 1: Homicide by firearm by month and year
+Even though one cannot confirm causality between both events, it is clear that the level of homicides by firearm in Mexico increased dramatically since the start of the war against organized crime in early 2007. Over the last decades the number of homicides by firearm have remained almost four time higher than before the war began.
+```{r, message=FALSE, warning = FALSE}
+homicide <- read_csv("homicide_snsp_month.csv")
+homicide_long <- gather (homicide, month, homicides, January:December, factor_key = TRUE) 
+```
+
+```{r warning= FALSE}
+month_year_gun <-
+  homicide_long %>%
+  filter(subtype == "CON ARMA DE FUEGO") %>%
+  filter (year > "2000") %>%
+  group_by(year, month) %>%
+  summarize(total_gun = sum(homicides))
+```
+
+```{r warning= FALSE}
+ggplot(data = month_year_gun) +
+  geom_tile(aes(x = month, y =year, fill = total_gun)) +
+  scale_y_continuous(breaks = 1997:2017, expand = c(0,0)) +
+  scale_x_discrete(position = "top") +
+  theme_mmh()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 0)) +
+  geom_hline(aes(yintercept=2007), color="white") +
+  scale_fill_continuous(trans = 'reverse') +
+  ggtitle("Total homicides by firearm by month in Mexico") +
+  labs(x = "Month", y = "Year", fill= "Homicides by firearm", caption = "Source: SNSP: Homicide records by the police")  +
+   annotate("text", x = "May", y = 2006, label = "War Against Organized Crime Begins", size = 4.5, color = "white", family = "Garamond") 
+```
+
+## Graph 2: Difference between police reports and death certificates
+The two main sources that report homicides in Mexico are the homicide records by the police (SNSP) and the mortality statistics by the autonomous statistic institute (INEGI). In order to understand the violence in Mexico we need to look at both. One of the most interesting phenomena is that since the war against organized crime began, the trends in total violent homicides of both sources flipped. Since 2007, police reports have systematically undereported homicides in Mexico.
+```{r, message = FALSE}
+test <- read_csv("difftrendssnspinegi.csv")
+```
+
+```{r}
+ggplot(test, aes(x=Year, y = total, group=type))+
+ geom_line(aes(color=type)) +
+ geom_point(aes(color=type)) +
+  theme_mmh()+
+  theme(axis.text.x = element_text(angle = 45),
+        panel.grid.major = element_blank(),
+        legend.position = "none")+
+  scale_color_manual(values=c("#3ba1ff", "#00cc90"),
+                     name = "Homicide records according to",
+                     breaks = c("death_certificates", "police_reports"),
+                     labels = c("Death certificates","Police reports"))+
+  labs(x = "Year", y = "Total homicides" , subtitle = "This discrepancy is unusual and raises the question if local \n police and attorneys have deliberately underreported homicides", caption = "Sources: INEGI: Mortality statistics. \n and SNSP: Homicide records by the police") +
+
+  xlab("Year") +
+  ggtitle("Since 2007 total homicides reported by police are less \n  than the total number of homicide death certificates") +
+  geom_vline(xintercept = 2007, linetype="dotted")+
+  annotate("segment", x = 2008, xend = 2008, y = 13155, yend = 14006,
+  colour = "#ff85a0", linetype= "dotted")+
+  annotate("segment", x = 2009, xend = 2009, y = 16118, yend = 19803,
+  colour = "#ff85a0", linetype= "dotted")+
+  annotate("segment", x = 2010, xend = 2010, y = 20143, yend = 25757,
+  colour = "#ff85a0", linetype= "dotted")+  
+  annotate("segment", x = 2011, xend = 2011, y = 22409, yend = 27213,
+  colour = "#ff85a0", linetype= "dotted")+ 
+  annotate("segment", x = 2012, xend = 2012, y = 21459, yend = 25976,
+  colour = "#ff85a0", linetype= "dotted")+ 
+  annotate("segment", x = 2013, xend = 2013, y = 18106, yend = 23063,
+  colour = "#ff85a0", linetype= "dotted")+ 
+  annotate("segment", x = 2014, xend = 2014, y = 15520, yend = 20010,
+  colour = "#ff85a0", linetype= "dotted")+ 
+  annotate("segment", x = 2015, xend = 2015, y = 16909, yend = 20762,
+  colour = "#ff85a0", linetype= "dotted")+ 
+  annotate("segment", x = 2016, xend = 2016, y = 20547, yend = 24559,
+  colour = "#ff85a0", linetype= "dotted")+ 
+  annotate("segment", x = 2017, xend = 2017, y = 25339, yend = 32079,
+  colour = "#ff85a0", linetype= "dotted")+ 
+  annotate("text", x = 2007, y = 25000, label = "War Against Organized Crime", angle=90, family = "Garamond", color = "darkgrey" ) +
+  annotate("text", x = 2000, y = 17000, label = "Police reports",  family = "Garamond", color = "seagreen3" ) +
+  annotate("text", x = 2011, y = 29500, label = "Death certificates",  family = "Garamond", color = "dodgerblue3" ) +
+  scale_x_continuous(breaks = 1997:2017, expand = c(0,0.5))
+ 
+```
+
+## Graph 3: Homicide rates by state through the years
+The dynamics of homicides have a very local component. As the graph shows, homicides have increase in some states like Colima, Baja California Sur and Zacatecas while it has decreased in states like Durango, the State of Mexico or Queretaro. This is in part because of the varying strength and violence of the drug cartels and the direct confrontations between the cartels and the Mexican police and army.
+
+```{r message = FALSE}
+rank_states <- read_csv("homicideraterankstate2.csv")
+```
+
+```{r message =FALSE}
+colors <- c("#B8B8B8","#B8B8B8","#7f1c32","#B8B8B8","#2d7ac1","#B8B8B8","#B8B8B8","#ff3864","#3ba1ff","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#87c6ff","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#B8B8B8","#ff85a0")
+ggplot(data = rank_states, aes(x = year, y = rank, group = states)) +
+  geom_line(aes(color = states, alpha = 1), size = 2) +
+  geom_point(aes(color = states, alpha = 1), size = 1) +
+  scale_y_reverse(breaks = 1:nrow(rank_states), expand = c(0,0.5))+
+  geom_point(color = "#FFFFFF", size = 1)+
+  scale_x_continuous(breaks = c(2007,2009,2012,2015,2017), expand = c(0.05,0.05))+
+  geom_text(data=rank_states %>% filter(year=="2007"),
+            aes(label=states, x=2006), size=3.5)+
+  geom_text(data = rank_states %>% filter(year == "2017"),
+            aes(label = states, x = 2018) , size = 3.5) +
+  coord_cartesian(ylim = c(1,32)) + 
+  theme_mmh() +
+  theme(legend.position = "none",
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  scale_color_manual(values = colors)+
+  labs(x = "Year",
+       title = "Relocation of the Zetas Cartel from Tamaulipas to Colima and Zacatecas cause an increase in homicides",
+       subtitle = "The states in red show the bigest relative increase in homicide rate and the  states in blue\n show the biggest relative decrease.", caption = "Source: SNSP: Homicide records by the police")
+``` 
+
+
+## Graph 4: Municipalities by level of violence
+The municipalities with the largest homicide rates per 100,000 are located in the West and Southeast regions of the country. The Northwest region comes in a  third place. The graph shows how homicides are concentrated in particular very violent municipalities in each region.
+
+```{r}
+# the data is the forgraphs.csv and the code in graphs_new.Rmd
+# creat a plot for each region by entering the number of municipalities in each level (low, med, high, v.high)
+# each waffle is for a particular region but will plot them altogether in the following chunk of code
+
+center <- c(`Low (0-4.4)` = 161, `Medium(4.5-10.3)` = 212, `High(10.4-29.3)` = 188,  `Very High(29.4 +)` = 55)
+#waffle(center, rows = 40, size = 1, colors = c("#ccc9b3", "#2d7ac1", "#007f5a", "#7f1c00"), title = "Center", keep = FALSE, pad = 10) 
+northeast <- c(`Low (0-4.4)` = 35, `Medium(4.5-10.3)` = 55, `High(10.4-29.3)` = 91,  `Very High(29.4 +)` = 48)
+#waffle(northeast, rows = 40, size = 1, colors = c("#ccc9b3", "#2d7ac1", "#007f5a", "#7f1c00"), title = "Northeast", keep = FALSE, pad = 20) 
+northwest <- c(`Low (0-4.4)` = 20, `Medium(4.5-10.3)` = 7, `High(10.4-29.3)` = 61,  `Very High(29.4 +)` = 79)
+#waffle(northwest, rows = 40, size = 1, colors = c("#ccc9b3", "#2d7ac1", "#007f5a", "#7f1c00"), title = "Northwest", keep = FALSE, pad =20)
+southeast <- c(`Low (0-4.4)` = 487, `Medium(4.5-10.3)` = 139, `High(10.4-29.3)` = 281,  `Very High(29.4 +)` = 137)
+#waffle(southeast, rows = 40, size = 1, colors = c("#ccc9b3", "#2d7ac1", "#007f5a", "#7f1c00"), title = "Southeast", keep = FALSE) 
+west <- c(`Low (0-4.4)` = 44, `Medium(4.5-10.3)` = 103, `High(10.4-29.3)` = 194,  `Very High(29.4 +)` = 60)
+#waffle(southeast, rows = 40, size = 1, colors = c("#ccc9b3", "#2d7ac1", "#007f5a", "#7f1c32"), title = "West", keep = FALSE) 
+```
+
+```{r message=FALSE, fig.width= 8}
+# create a plot for each region but do not plot it yet
+c <- waffle(center, rows = 40, size = 1, colors = c("#ccc9b3", "#2d7ac1", "#007f5a", "#7f1c32"), title = "Center", keep = FALSE, pad = 11)+
+  theme_mmh()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        )
+
+ne <- waffle(northeast, rows = 40, size = 1, colors = c("#ccc9b3", "#2d7ac1", "#007f5a", "#7f1c32"), title = "Northeast", keep = FALSE, pad =20) +
+  theme_mmh()+
+    theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        )
+nw <- waffle(northwest, rows = 40, size = 1, colors = c("#ccc9b3", "#2d7ac1", "#007f5a", "#7f1c32"), title = "Northwest", keep = FALSE, pad = 22)+
+  theme_mmh() +
+    theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        )
+se <- waffle(southeast, rows = 40, size = 1, colors = c("#ccc9b3", "#2d7ac1", "#007f5a", "#7f1c32"), title = "Southeast", keep = FALSE) +
+  theme_mmh()+
+    theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        )
+w <- waffle(southeast, rows = 40, size = 1, colors = c("#ccc9b3", "#2d7ac1", "#007f5a", "#7f1c32"), title = "West", keep = FALSE) +
+  
+  theme_mmh()+
+    theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+
+        )
+# use ggarange to combine the 5 previous plot into one plot 
+figure <- 
+  ggarrange(w,se,c,nw,ne,
+          common.legend = TRUE, legend = "top",
+                    ncol = 5, nrow = 1)
+annotate_figure(figure,
+                top = text_grob("Distribution of municipalities by regions \n 1 square = 1 municipality \n Level of homicides per 100,000", color = rgb(34, 34, 34, maxColorValue = 255),family="Cambria", face = "bold", size = 12),
+                bottom = text_grob("Source: SNSP: Homicide records by the police",color = rgb(34, 34, 34, maxColorValue = 255), family="Cambria",
+                                   hjust = 1, x = 1, size = 9),
+                theme_mmh()
+                )
+```
+
+## Graph 5: Spatial autocorrelation of homicide levels between municipalities
+One of the most important measure of spatial correlation is Local Moran's I. Local Moran's I measures how geographical units can form statistically significan clusters. A positive value for Moran's I indicates that a feature has neighboring features with similarly high or low attribute values; this feature is part of a cluster. In this case the dark red or dark blue clusters are clusters with similar neighbors.  A negative value for I indicates that a feature has neighboring features with dissimilar values; this feature is an outlier. For the case of the municipalities, the light red and light blue are clusters with dissimilar neighbors.
+
+```{r, message = FALSE}
+morans_shp <- read_sf("municipios_localmorans.shp")
+inset_shp <- read_sf("inset_localmorans.shp")
+inset_shp[1, 15] = 0
+inset_shp[7, 15] = 0
+inset_shp[16, 15] = 0
+inset_shp[2, 15] = 1
+inset_shp[3, 15] = 1
+inset_shp[4, 15] = 1
+inset_shp[5, 15] = 1
+inset_shp[6, 15] = 1
+inset_shp[16, 15] = 0
+inset_shp[8, 15] = 1
+inset_shp[9, 15] = 1
+inset_shp[10, 15] = 1
+inset_shp[11, 15] = 1
+inset_shp[12, 15] = 1
+inset_shp[13, 15] = 1
+inset_shp[14, 15] = 1
+inset_shp[15, 15] = 1
+```
+
+
+```{r cache= TRUE, fig.width=8}
+main <- ggplot() + 
+  geom_sf(data = morans_shp, aes(fill=factor(LISA_CL)), lwd = 0) + 
+  labs(title="Homicide levels are spatially correlated ",
+       fill = "Homicides in municipailty - homicides in neighboring municipality",
+       caption = "Sources: INEGI: Mortality statistics.",
+       subtitle = "There are hotspots (dark red) and coldspots (dark blue)")+
+  scale_fill_manual(breaks = c(0,1,2,3,4),
+                    labels = c("Not significant", "High-High", "Low-Low", "Low-High","High-Low"),
+                        values=c("white", "#7f1c32", "#2d7ac1", "#87c6ff","#ff85a0"),
+                    expand=c(0,0)) +
+  
+  theme_mmh()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = "top")
+  
+   
+```
+```{r cache= TRUE}
+inset <- ggplot() + 
+  geom_sf(data = inset_shp, aes(fill=factor(LISA_CL)), lwd = 0) + 
+  scale_fill_manual(breaks = c(0,1,2,3,4),
+                    labels = c("Not significant", "High-High", "Low-Low", "Low-High","High-Low"),
+                        values=c("white", "#7f1c32", "#2d7ac1", "#87c6ff","#ff85a0")) +
+  
+  theme_mmh()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.title = element_blank(),
+        legend.position = "none")
+```
+
+```{r cache = TRUE }
+plot.with.inset <-
+  ggdraw() +
+  draw_plot(main) +
+  draw_plot(inset, x = 0.65, y = .4, width = .4, height = .4)
+
+```
+```{r fig.width= 10, fig.height= 8}
+plot.with.inset
+```
+
+
+
+## Graph 6: Insitutional corruption and reported crime by state
+One of the main issues that fosters the high levels of violence is the fact that people do not trust the justice institutions and do not report crimes. Nevertheless, the graph shows how people report crimes even though thtey percieve their institutions to be corrupt. However, there are states (in red) like Baja Califorina, Guanajuatio, Jalisco, Puebla, and the State of Mexico that do not fit the overall trend by the rest of the states.
+
+```{r warning= FALSE, message= FALSE}
+incidencia <- (read_csv("denunciados_incidencia.csv"))
+```
+
+```{r warning= FALSE, message= FALSE}
+ggplot(incidencia, aes(x= corrupcion_mp, y = delitos_denunciados/100, size = Incidencia_delicitva_tasa_2017, label = State)) +
+  geom_smooth() +
+  geom_point(color = ifelse(incidencia$delitos_denunciados > 120005 & incidencia$corrupcion_mp < 80, "#ff3864", "#3ba1ff")) +
+  labs(x = "Percent who say state attorneys are corrupt", y = "Total reported crimes in hundreds ", subtitle = "The red dots are the states that do not fit the general trend and are considered outliers. \n These states have more reported crimes than the average", caption = "Source: ENVIPE: Public Security and Trust Survey", size = "Number of crimes per 100,000") +
+  ggtitle("Perception of corruption and number of reported crimes controlling \n for the number of crimes per 100,000 people") +
+  geom_text(aes(label=ifelse(delitos_denunciados>120005,as.character(State),'')),hjust=1.1,vjust=0,size=3)+
+  theme_mmh()
+  
+```
+
+## Graph 7: Perception of insecurity in states
+
+When people are asked to describe the level of insecurity of their state, their perception varies significantly from state to state.
+```{r message= FALSE}
+insecurity <- read_csv("insecurityperception.csv")
+mexstates <- (st_as_sf(ne_states(country = "mexico")))
+mexstates <- left_join(mexstates, insecurity)
+mexstates[12,86] = 3
+```
+
+```{r fig.width= 8, fig.height= 6}
+ggplot(mexstates, aes(fill=factor(rank_perc))) +
+  geom_sf() +
+  scale_fill_manual(breaks = c(1,2,3,4),
+                    labels = c("Low", "Medium", "High","Very High"),
+                        values=c("white", "#4cffcb", "#00cc90", "#007f5a")) +
+  labs(title="Perception of insecurity varies within states",
+       fill = "Perception of insecurity in your state?",
+       caption = "Sources: ENVIPE:Perception of insecurity.",
+       subtitle = "More people in Veracruz and Mexico City consider their state \n to be insecure than in Yucatan and Campeche")+
+  theme_mmh()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = "top")
+  
+```
+
+
+## Graph 8 : Cause of homicide by sex
+
+The human side of homicides show how there are different dynamics between men a women. The way men and women are killed show different patterns that may point to different phenomena. Women, unlike men are killed by asphyxiation and knife that point towards the high levels of feminicides in the country. Men on the other hand are killed mostly by firearm that point towards the deaths involved in the war of drugs. 
+```{r}
+causegraph <- read.csv("causegraph.csv")
+```
+```{r}
+ggplot(causegraph) +
+geom_bar(mapping = aes(x = reorder(cause3, -percent), y = percent, group = sexo2, fill = factor(sexo2)),stat = "identity", position = "dodge")+ coord_flip() +
+  scale_y_continuous(expand = c(0,1))+
+  scale_fill_manual ("Gender", values = c("Men" = "#2d7ac1", "Women" = "#ff3864")) +
+  labs(x = "Cause of homicide", y = "Percent", subtitle = "Men and women are killed primarely by firearm. Yet women are more likely  than \n men to be murdered by asphyxiation or knife, indicating potential feminicides", caption = "Source: INEGI: Mortality Statistics") +
+  ggtitle("Women are more likely to be  killed by knife \n or asphyxiation than men") +
+  guides(fill=guide_legend("Gender")) +
+  theme_mmh()
+```
+
+## Graph 9 : Place of homicide and relationship to killer
+
+Another difference between men and women is that most women are killed at home, regardless if they are killed by a relative or not. Furthermore, more women are killed by relatives than strangers. In contrast, men are killed predominantly in the streets and by strangers.
+
+```{r message = FALSE}
+sankey <- read_csv("sankey_graph_v2.csv")
+```
+
+```{r}
+colors <- c("#2d7ac1", "#ff3864", "#ccc9b3")
+ggplot(sankey,
+       aes(y = freq,
+          axis1 = location, axis2 = related, axis3 = sexo)) +
+  geom_alluvium(aes(fill = sexo),
+                width = 0, knot.pos = 0, reverse = FALSE) +
+  guides(fill = FALSE) +
+  geom_stratum(width = 1/8, reverse = FALSE) +
+  geom_text(stat = "stratum", label.strata = TRUE, reverse = FALSE, family = "Garamond") +
+  scale_x_continuous(breaks = 1:3, labels = c("Location", "Related", "Sex")) +
+  coord_flip() +
+  ggtitle("  Women are more likley to be killed by a relative at home
+          Men are more likely to be killed in the street")+
+  theme_mmh()+
+  theme(
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+  ) +
+  labs(caption = "Sources: INEGI: Mortality statistics.") +
+  scale_fill_manual(values = colors) 
+
+```

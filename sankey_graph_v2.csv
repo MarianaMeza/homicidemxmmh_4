@@ -1,0 +1,17 @@
+sexo,family_viol,location,related,freq
+Men,Yes,Home,Yes,25
+Men,Yes,Home,No,2
+Men ,Yes,Street,Yes,15
+Men,Yes,Street,No,0
+Men,No,Home,Yes,5
+Men,No,Home,No,8
+Men ,No,Street,Yes,6
+Men,No,Street,No,24
+Women,Yes,Home,Yes,20
+Women,Yes,Home,No,15
+Women,Yes,Street,Yes,2
+Women,Yes,Street,No,4
+Women,No,Home,Yes,1
+Women,No,Home,No,2
+Women,No,Street,Yes,0
+Women,No,Street,No,1
